@@ -11,8 +11,8 @@ namespace IC_Backend
         {
         }
 
-        public virtual DbSet<Producto> Alertas { get; set; } = null!;
-        public virtual DbSet<Usuario> Contractuales { get; set; } = null!;
+        public virtual DbSet<Producto> Productos { get; set; } = null!;
+        public virtual DbSet<Usuario> Usuarios { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -27,20 +27,20 @@ namespace IC_Backend.Controllers
         }
 
         [HttpGet("id")]
-        public async Task<ActionResult<ICollection<AlertaDSPPP>>> GetAlerta(string id)
+        public async Task<ActionResult<ICollection<Producto>>> GetProducto(string id)
         {
-            var alerta = await context.Alertas.Where(e => e.AlertaDSPPPId.Equals(id)).Include(r => r.ProcesoCompra).FirstOrDefaultAsync();
+            var alerta = await context.Productos.Where(e => e.Id.Equals(id)).FirstOrDefaultAsync();
             if (alerta == null)
                 return NotFound();
             return Ok(alerta);
         }
 
         [HttpPost]
-        public async Task<ActionResult<string>> Post(AlertaDSPPP alerta)
+        public async Task<ActionResult<string>> Post(Producto producto)
         {
-            var created = context.Alertas.Add(alerta);
+            var created = context.Productos.Add(producto);
             await context.SaveChangesAsync();
-            return CreatedAtAction("GetAlerta", new { id = alerta.AlertaDSPPPId }, created.Entity);
+            return CreatedAtAction("GetProducto", new { id = producto.Id }, created.Entity);
         }
 
         [HttpPut("id")]
@@ -51,8 +51,8 @@ namespace IC_Backend.Controllers
             if (!existe)
                 return NotFound();
 
-            alerta.AlertaDSPPPId = id;
-            context.Alertas.Update(alerta);
+            producto.Id = id;
+            context.Productos.Update(producto);
             await context.SaveChangesAsync();
             return NoContent();
         }
@@ -66,15 +66,15 @@ namespace IC_Backend.Controllers
                 return NotFound();
 
 
-            var alerta = await context.Alertas.FindAsync(id);
-            context.Alertas.Remove(alerta);
+            var producto = await context.Productos.FindAsync(id);
+            context.Productos.Remove(producto);
             await context.SaveChangesAsync();
             return NoContent();
         }
 
         private async Task<bool> Existe(string id)
         {
-            return await context.Alertas.AnyAsync(p => p.Id == id);
+            return await context.Productos.AnyAsync(p => p.Id == id);
         }
     }
 }
