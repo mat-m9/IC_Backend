@@ -20,7 +20,7 @@ namespace IC_Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<ICollection<Producto>>> Get()
         {
-            var productos = await context.Producto.ToListAsync();
+            var productos = await context.Productos.ToListAsync();
             if (!productos.Any())
                 return NotFound();
             return productos;
@@ -34,6 +34,26 @@ namespace IC_Backend.Controllers
                 return NotFound();
             return Ok(alerta);
         }
+
+        [HttpPost(template: ApiRoutes.Producto.IdUsuario)]
+        public async Task<ActionResult<ICollection<Producto>>> GetProductoUsuario(string idUsuario)
+        {
+            var alerta = await context.Productos.Where(e => e.usuarioId.Equals(idUsuario)).ToListAsync();
+            if (alerta == null)
+                return NotFound();
+            return Ok(alerta);
+        }
+
+        [HttpGet(template: ApiRoutes.Producto.Descripcion)]
+        public async Task<ActionResult<ICollection<Producto>>> GetProductoDesc(string desc)
+        {
+            var alerta = await context.Productos.Where(e => e.descripcion.Equals(desc)).ToListAsync();
+            if (alerta == null)
+                return NotFound();
+            return Ok(alerta);
+        }
+
+
 
         [HttpPost]
         public async Task<ActionResult<string>> Post(Producto producto)

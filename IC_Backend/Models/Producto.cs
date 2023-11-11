@@ -16,7 +16,7 @@ namespace IC_Backend.Models
         public Usuario? usuario { get; set; }
         public string nombre { get; set; }
 
-        public string descripción { get; set; }
+        public string descripcion { get; set; }
 
         public double precio { get; set; }
 
