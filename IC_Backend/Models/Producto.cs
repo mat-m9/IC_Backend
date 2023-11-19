@@ -8,7 +8,7 @@ namespace IC_Backend.Models
     public partial class Producto
     {
         [Key]
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         [Required]
         [ForeignKey("usuarioId")]
@@ -20,7 +20,7 @@ namespace IC_Backend.Models
 
         public double precio { get; set; }
 
-        //public byte[] imagen { get; set; }
+
 
     }
 }

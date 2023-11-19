@@ -53,8 +53,6 @@ builder.Services.AddAuthentication(configureOptions: options =>
         options.SaveToken = true;
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = tokenValidationParameters;
-        //options.TokenValidationParameters.NameClaimType = "sub";
-        //options.TokenValidationParameters.RoleClaimType = "role";
         options.Events = new JwtBearerEvents
         {
             OnChallenge = context =>
@@ -135,6 +133,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -143,6 +143,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(x => x
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .SetIsOriginAllowed(origin => true)
+                    .AllowCredentials());
+
 
 app.UseAuthentication();
 app.UseAuthorization();

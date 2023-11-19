@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IC_Backend.Controllers
 {
+    [ApiController]
     public class IdentityController : Controller
     {
         private readonly IIdentityService _identityService;
@@ -21,21 +22,8 @@ namespace IC_Backend.Controllers
                 return BadRequest();
             }
 
-            var authResponse = await _identityService.RegisterAsync(request.userName, request.password);
+            var authResponse = await _identityService.RegisterAsync(request.userName, request.password, request.userMail, request.phone);
 
-
-            if (authResponse == false)
-            {
-                return BadRequest();
-            }
-
-            return Ok();
-        }
-
-        [HttpPost(template: ApiRoutes.Identity.Login)]
-        public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
-        {
-            var authResponse = await _identityService.LoginAsync(request.userName, request.password);
 
             if (!authResponse.Success)
             {
@@ -46,8 +34,25 @@ namespace IC_Backend.Controllers
             }
             return Ok(new AuthSuccessResponse
             {
-                Token = authResponse.Token,
-                RefreshedToken = authResponse.RefreshToken
+                Token = authResponse.Token
+            });
+        }
+
+        [HttpPost(template: ApiRoutes.Identity.Login)]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
+        {
+            var authResponse = await _identityService.LoginAsync(request.userMail, request.password);
+
+            if (!authResponse.Success)
+            {
+                return BadRequest(new AuthFailedResponse
+                {
+                    Errors = authResponse.Errors
+                }); ;
+            }
+            return Ok(new AuthSuccessResponse
+            {
+                Token = authResponse.Token
             });
         }
 
@@ -66,8 +71,7 @@ namespace IC_Backend.Controllers
 
             return Ok(new AuthSuccessResponse
             {
-                Token = authResponse.Token,
-                RefreshedToken = authResponse.RefreshToken
+                Token = authResponse.Token
             });
         }
 

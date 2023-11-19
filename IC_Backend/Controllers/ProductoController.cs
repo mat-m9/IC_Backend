@@ -35,7 +35,7 @@ namespace IC_Backend.Controllers
             return Ok(alerta);
         }
 
-        [HttpPost(template: ApiRoutes.Producto.IdUsuario)]
+        [HttpGet(template: ApiRoutes.Producto.IdUsuario)]
         public async Task<ActionResult<ICollection<Producto>>> GetProductoUsuario(string idUsuario)
         {
             var alerta = await context.Productos.Where(e => e.usuarioId.Equals(idUsuario)).ToListAsync();
@@ -53,6 +53,18 @@ namespace IC_Backend.Controllers
             return Ok(alerta);
         }
 
+        [HttpGet(template: ApiRoutes.Producto.Busqueda)]
+        public async Task<ActionResult<ICollection<Producto>>> GetProductoBuscar(string busqueda)
+        {
+            var productosEncontrados = await context.Productos
+                .Where(e => e.nombre.Contains(busqueda))
+                .ToListAsync();
+
+            if (productosEncontrados == null || productosEncontrados.Count == 0)
+                return NotFound();
+
+            return Ok(productosEncontrados);
+        }
 
 
         [HttpPost]
@@ -63,15 +75,14 @@ namespace IC_Backend.Controllers
             return CreatedAtAction("GetProducto", new { id = producto.Id }, created.Entity);
         }
 
-        [HttpPut("id")]
-        public async Task<ActionResult> Put(string id, Producto producto)
+        [HttpPut]
+        public async Task<ActionResult> Put(Producto producto)
         {
-            var existe = await Existe(id);
+            var existe = await Existe(producto.Id);
 
             if (!existe)
                 return NotFound();
 
-            producto.Id = id;
             context.Productos.Update(producto);
             await context.SaveChangesAsync();
             return NoContent();

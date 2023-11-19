@@ -15,8 +15,15 @@
 
         public static class Producto
         {
-            public const string IdUsuario = Base + "/Producto/IdUsuario";
-            public const string Descripcion = Base + "/Producto/Desc";
+            public const string IdUsuario = "/api/Producto/IdUsuario";
+            public const string Descripcion = "/api/Producto/Desc";
+            public const string Busqueda = "/api/Producto/Buscar";
+        }
+
+        public static class Compra
+        {
+            public const string Comprador = "/api/Compra/IdComprador";
+            public const string Vendedor = "/api/Compra/IdVendedor";
         }
     }
 }

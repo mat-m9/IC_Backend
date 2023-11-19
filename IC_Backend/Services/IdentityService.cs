@@ -26,16 +26,23 @@ namespace IC_Backend.Services
             this.databaseContext = databaseContext;
         }
 
-        public async Task<bool> RegisterAsync(string userName, string password)
+        public async Task<AuthenticationResult> RegisterAsync(string userName, string password, string mail, string phone)
         {
             var existingUser = await _userManager.FindByNameAsync(userName);
             if (existingUser != null)
             {
-                return false;
+                return new AuthenticationResult
+                {
+                    Errors = new[] { "El usuario ya existe" }
+                };
             }
             var newUser = new Usuario
             {
                 UserName = userName,
+                NormalizedUserName = userName.ToUpper(),
+                Email = mail,
+                NormalizedEmail = mail.ToUpper(),
+                celular = phone
 
             };
 
@@ -43,16 +50,19 @@ namespace IC_Backend.Services
 
             if (!createdUser.Succeeded)
             {
-                return false;
+                return new AuthenticationResult
+                {
+                    Errors = new[] { "No se pudo registrar" }
+                };
             }
-            var getUser = await _userManager.FindByNameAsync(userName);
+            var user = await _userManager.FindByNameAsync(userName);
 
-            return true;
+            return await GenerateAthenticationResultForUserAsync(user);
         }
 
-        public async Task<AuthenticationResult> LoginAsync(string userName, string password)
+        public async Task<AuthenticationResult> LoginAsync(string userMail, string password)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            var user = await _userManager.FindByEmailAsync(userMail);
             if (user == null)
             {
                 return new AuthenticationResult
@@ -113,8 +123,8 @@ namespace IC_Backend.Services
             return new AuthenticationResult
             {
                 Success = true,
-                Token = tokenHandler.WriteToken(token),
-                RefreshToken = refreshToken.JwtId
+                //Token = tokenHandler.WriteToken(token)
+                Token = newUser.Id
             };
         }
 
@@ -193,15 +203,5 @@ namespace IC_Backend.Services
         //        return true;
         //    return false;
         //}
-
-        Task<AuthenticationResult> IIdentityService.LoginAsync(string userName, string password)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<AuthenticationResult> IIdentityService.RefreshTokenAsync(string token, string refresToken)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

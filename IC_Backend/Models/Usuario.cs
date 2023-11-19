@@ -7,12 +7,12 @@ namespace IC_Backend.Models
     public partial class Usuario : IdentityUser
     {
 
-        public string nombre { get; set; }
-
         public string celular { get; set; }
 
 
-        public ICollection<Producto>? Productos { get; set; }
+        public ICollection<Producto>? productos { get; set; }
+        public ICollection<Compra>? productosComprados { get; set; }
+        public ICollection<Compra>? productosVendidos { get; set; }
     }
 }
 
