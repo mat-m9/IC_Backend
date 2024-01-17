@@ -22,7 +22,31 @@ namespace IC_Backend.Controllers
                 return BadRequest();
             }
 
-            var authResponse = await _identityService.RegisterAsync(request.userName, request.password, request.userMail, request.phone);
+            var authResponse = await _identityService.RegisterAsync(request.userName, request.password, request.userMail, request.phone, "comprador");
+
+
+            if (!authResponse.Success)
+            {
+                return BadRequest(new AuthFailedResponse
+                {
+                    Errors = authResponse.Errors
+                }); ;
+            }
+            return Ok(new AuthSuccessResponse
+            {
+                Token = authResponse.Token
+            });
+        }
+
+        [HttpPost(template: ApiRoutes.Identity.RegisterVendedor)]
+        public async Task<IActionResult> RegisterVendedor([FromBody] UserRegisterRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var authResponse = await _identityService.RegisterAsync(request.userName, request.password, request.userMail, request.phone, "vendedor");
 
 
             if (!authResponse.Success)
@@ -45,10 +69,7 @@ namespace IC_Backend.Controllers
 
             if (!authResponse.Success)
             {
-                return BadRequest(new AuthFailedResponse
-                {
-                    Errors = authResponse.Errors
-                }); ;
+                return BadRequest();
             }
             return Ok(new AuthSuccessResponse
             {
@@ -56,32 +77,15 @@ namespace IC_Backend.Controllers
             });
         }
 
-        [HttpPost(ApiRoutes.Identity.Refresh)]
-        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
+
+        [HttpPut(ApiRoutes.Identity.Change)]
+        public async Task<IActionResult> ChangePassWord([FromBody] ChangePasswordRequest changePasswordRequest)
         {
-            var authResponse = await _identityService.RefreshTokenAsync(request.Token, request.RefreshedToken);
-
-            if (!authResponse.Success)
-            {
-                return BadRequest(new AuthFailedResponse
-                {
-                    Errors = authResponse.Errors
-                }); ;
-            }
-
-            return Ok(new AuthSuccessResponse
-            {
-                Token = authResponse.Token
-            });
+            bool response = await _identityService.ChangePassword(
+                changePasswordRequest.UserId, changePasswordRequest.OldPassword, changePasswordRequest.NewPassword);
+            if (response)
+                return NoContent();
+            return BadRequest();
         }
-
-        //[HttpPut(ApiRoutes.Identity.Change)]
-        //public async Task<IActionResult> ChangePassWord([FromBody] ChangePasswordRequest changePasswordRequest)
-        //{
-        //    bool response = await _identityService.ChangePassword(changePasswordRequest.UserId, changePasswordRequest.OldPassword, changePasswordRequest.NewPassword);
-        //    if (response)
-        //        return NoContent();
-        //    return BadRequest();
-        //}
     }
 }

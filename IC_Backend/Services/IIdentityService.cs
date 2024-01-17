@@ -4,9 +4,8 @@ namespace IC_Backend.Services
 {
     public interface IIdentityService
     {
-        Task<AuthenticationResult> RegisterAsync(string userName, string password, string mail, string phone);
+        Task<AuthenticationResult> RegisterAsync(string userName, string password, string mail, string phone, string rol);
         Task<AuthenticationResult> LoginAsync(string userMail, string password);
-        Task<AuthenticationResult> RefreshTokenAsync(string token, string refresToken);
-        //Task<bool> ChangePassword(string userName, string oldPassword, string newPassword);
+        Task<bool> ChangePassword(string userId, string oldPassword, string newPassword);
     }
 }

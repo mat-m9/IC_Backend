@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using IC_Backend.ResponseModels;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,7 @@ var jwtSettings = new JwtSettings();
 builder.Configuration.Bind(key: nameof(jwtSettings), jwtSettings);
 builder.Services.AddSingleton(jwtSettings);
 builder.Services.AddScoped<IIdentityService, IdentityService>();
+builder.Services.AddSingleton<DefaultRolesServices>();
 
 
 
@@ -25,6 +29,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//Ciclos de la entidad recursiva
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddIdentity<Usuario, IdentityRole>()
     .AddEntityFrameworkStores<DatabaseContext>()
@@ -144,12 +152,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+
+
 app.UseCors(x => x
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .SetIsOriginAllowed(origin => true)
-                    .AllowCredentials());
+                    //.SetIsOriginAllowed(origin => true)
+                    //.AllowCredentials()
+                    .AllowAnyOrigin());
 
+PopulateDB.Initialize(app.Services);
 
 app.UseAuthentication();
 app.UseAuthorization();

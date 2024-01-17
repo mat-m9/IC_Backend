@@ -9,7 +9,6 @@ namespace IC_Backend.Models
 
         public string celular { get; set; }
 
-
         public ICollection<Producto>? productos { get; set; }
         public ICollection<Compra>? productosComprados { get; set; }
         public ICollection<Compra>? productosVendidos { get; set; }

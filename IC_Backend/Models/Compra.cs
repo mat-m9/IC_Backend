@@ -22,6 +22,8 @@ namespace IC_Backend.Models
 
         public int cantidad { get; set; }
         public double total { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? fecha { get; set; }
 
         public Producto? producto { get; set; }
         public Usuario? usuarioCompra { get; set; }

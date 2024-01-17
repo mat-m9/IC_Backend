@@ -32,6 +32,9 @@ namespace IC_Backend.Migrations
                     b.Property<int>("cantidad")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("fecha")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("productoId")
                         .IsRequired()
                         .HasColumnType("text");

@@ -1,6 +1,7 @@
 ﻿using IC_Backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static IC_Backend.ApiRoutes;
 
 namespace IC_Backend.Controllers
 {
@@ -18,8 +19,6 @@ namespace IC_Backend.Controllers
         {
             var compras = await context.Compras
                 .Include(p => p.producto)
-                .Include(u => u.usuarioCompra)
-                .Include(u => u.usuarioVenta)
                 .ToListAsync();
             if (!compras.Any())
                 return NotFound();
@@ -27,38 +26,33 @@ namespace IC_Backend.Controllers
         }
 
         [HttpGet("id")]
-        public async Task<ActionResult<ICollection<Producto>>> GetCompra(string id)
+        public async Task<ActionResult<ICollection<Compra>>> GetCompra(string id)
         {
             var compra = await context.Compras.Where(e => e.Id.Equals(id))
                 .Include(p => p.producto)
-                .Include(u => u.usuarioCompra)
-                .Include(u => u.usuarioVenta)
                 .FirstOrDefaultAsync();
             if (compra == null)
                 return NotFound();
             return Ok(compra);
         }
 
-        [HttpGet(template: ApiRoutes.Compra.Vendedor)]
+        [HttpGet(template: ApiRoutes.CompraRuta.Vendedor)]
         public async Task<ActionResult<ICollection<Compra>>> GetProductoUsuarioVendedor(string idUsuario)
         {
             var compra = await context.Compras.Where(e => e.usuarioVentaId.Equals(idUsuario))
                 .Include(p => p.producto)
                 .Include(u => u.usuarioCompra)
-                .Include(u => u.usuarioVenta)
                 .ToListAsync();
             if (compra == null)
                 return NotFound();
             return Ok(compra);
         }
 
-        [HttpGet(template: ApiRoutes.Compra.Comprador)]
+        [HttpGet(template: ApiRoutes.CompraRuta.Comprador)]
         public async Task<ActionResult<ICollection<Compra>>> GetProductoUsuarioComprador(string idUsuario)
         {
             var compra = await context.Compras.Where(e => e.usuarioCompraId.Equals(idUsuario))
                 .Include(p => p.producto)
-                .Include(u => u.usuarioCompra)
-                .Include(u => u.usuarioVenta)
                 .ToListAsync();
             if (compra == null)
                 return NotFound();
@@ -70,6 +64,7 @@ namespace IC_Backend.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> Post(Compra compra)
         {
+            compra.fecha = DateTime.UtcNow;
             var created = context.Compras.Add(compra);
             await context.SaveChangesAsync();
             return CreatedAtAction("GetCompra", new { id = compra.Id }, created.Entity);

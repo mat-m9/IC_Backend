@@ -44,28 +44,6 @@ namespace IC_Backend.Controllers
             return Ok(alerta);
         }
 
-        [HttpGet(template: ApiRoutes.Producto.Descripcion)]
-        public async Task<ActionResult<ICollection<Producto>>> GetProductoDesc(string desc)
-        {
-            var alerta = await context.Productos.Where(e => e.descripcion.Equals(desc)).ToListAsync();
-            if (alerta == null)
-                return NotFound();
-            return Ok(alerta);
-        }
-
-        [HttpGet(template: ApiRoutes.Producto.Busqueda)]
-        public async Task<ActionResult<ICollection<Producto>>> GetProductoBuscar(string busqueda)
-        {
-            var productosEncontrados = await context.Productos
-                .Where(e => e.nombre.Contains(busqueda))
-                .ToListAsync();
-
-            if (productosEncontrados == null || productosEncontrados.Count == 0)
-                return NotFound();
-
-            return Ok(productosEncontrados);
-        }
-
 
         [HttpPost]
         public async Task<ActionResult<string>> Post(Producto producto)
